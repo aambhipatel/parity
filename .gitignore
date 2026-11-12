@@ -21,6 +21,7 @@ private/
 backups/
 imports/
 exports/
+scripts/
 
 # Python, frontend output and local tooling
 __pycache__/
