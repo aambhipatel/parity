@@ -13,11 +13,14 @@ import {
   PanelLeftOpen,
   Sun,
   Moon,
+  Eye,
+  EyeOff,
 } from 'lucide-react';
 import { cn } from '../utils/helpers';
 import { Tooltip } from './Tooltip';
 import { DatabaseIndicator } from './DatabaseIndicator';
 import { useTheme } from '../context/ThemeContext';
+import { usePrivacy } from '../context/PrivacyContext';
 
 const navItems = [
   { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
@@ -31,14 +34,22 @@ export function Layout() {
   const location = useLocation();
   const [dbKey, setDbKey] = useState(0);
   const { theme, toggleTheme } = useTheme();
+  const { hideAmounts, toggleHideAmounts } = usePrivacy();
 
   useEffect(() => {
     const handleDbChange = () => {
       // Re-render active page data without a full browser reload
       setDbKey((k) => k + 1);
     };
+    const handlePrivacyChange = () => {
+      setDbKey((k) => k + 1);
+    };
     window.addEventListener('database-changed', handleDbChange);
-    return () => window.removeEventListener('database-changed', handleDbChange);
+    window.addEventListener('privacy-mode-changed', handlePrivacyChange);
+    return () => {
+      window.removeEventListener('database-changed', handleDbChange);
+      window.removeEventListener('privacy-mode-changed', handlePrivacyChange);
+    };
   }, []);
 
   const [isCollapsed, setIsCollapsed] = useState<boolean>(() => {
@@ -249,24 +260,51 @@ export function Layout() {
               </div>
             </Tooltip>
 
-            {/* Dark / Light Mode Button next to User */}
-            <Tooltip
-              content={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-              side={isCollapsed ? 'right' : 'top'}
-            >
-              <button
-                type="button"
-                onClick={toggleTheme}
-                aria-label={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-                className="relative p-2 rounded-xl text-text-secondary hover:text-text-primary hover:bg-surface-lighter border border-border/60 hover:border-border transition-all duration-200 shrink-0 focus:outline-none focus:ring-2 focus:ring-primary-500/40 cursor-pointer shadow-sm active:scale-95"
+            {/* Controls Group next to User: Privacy Mode & Theme Mode */}
+            <div className={cn('flex items-center', isCollapsed ? 'flex-col gap-1.5' : 'gap-1.5 shrink-0')}>
+              {/* Privacy Mode Toggle Button */}
+              <Tooltip
+                content={hideAmounts ? 'Show sensitive amounts (Alt+H)' : 'Hide sensitive amounts (Alt+H)'}
+                side={isCollapsed ? 'right' : 'top'}
               >
-                {theme === 'dark' ? (
-                  <Sun size={16} className="text-amber-400 transition-transform duration-300 hover:rotate-45" />
-                ) : (
-                  <Moon size={16} className="text-primary-600 transition-transform duration-300 hover:-rotate-12" />
-                )}
-              </button>
-            </Tooltip>
+                <button
+                  type="button"
+                  onClick={toggleHideAmounts}
+                  aria-label={hideAmounts ? 'Show sensitive amounts' : 'Hide sensitive amounts'}
+                  className={cn(
+                    'relative p-2 rounded-xl border transition-all duration-200 shrink-0 focus:outline-none focus:ring-2 focus:ring-primary-500/40 cursor-pointer shadow-sm active:scale-95',
+                    hideAmounts
+                      ? 'bg-primary-500/15 border-primary-500/35 text-primary-400 hover:bg-primary-500/25'
+                      : 'text-text-secondary hover:text-text-primary hover:bg-surface-lighter border-border/60 hover:border-border'
+                  )}
+                >
+                  {hideAmounts ? (
+                    <EyeOff size={16} className="text-primary-400" />
+                  ) : (
+                    <Eye size={16} className="text-text-secondary" />
+                  )}
+                </button>
+              </Tooltip>
+
+              {/* Dark / Light Mode Button next to User */}
+              <Tooltip
+                content={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+                side={isCollapsed ? 'right' : 'top'}
+              >
+                <button
+                  type="button"
+                  onClick={toggleTheme}
+                  aria-label={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+                  className="relative p-2 rounded-xl text-text-secondary hover:text-text-primary hover:bg-surface-lighter border border-border/60 hover:border-border transition-all duration-200 shrink-0 focus:outline-none focus:ring-2 focus:ring-primary-500/40 cursor-pointer shadow-sm active:scale-95"
+                >
+                  {theme === 'dark' ? (
+                    <Sun size={16} className="text-amber-400 transition-transform duration-300 hover:rotate-45" />
+                  ) : (
+                    <Moon size={16} className="text-primary-600 transition-transform duration-300 hover:-rotate-12" />
+                  )}
+                </button>
+              </Tooltip>
+            </div>
           </div>
         </div>
       </aside>
@@ -285,8 +323,26 @@ export function Layout() {
             </div>
           </div>
 
-          {/* Top Right Corner DB Indicator and Mobile Theme Toggle */}
-          <div className="flex items-center gap-3">
+          {/* Top Right Corner DB Indicator, Privacy Toggle, and Mobile Theme Toggle */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            <button
+              type="button"
+              onClick={toggleHideAmounts}
+              aria-label={hideAmounts ? 'Show sensitive amounts' : 'Hide sensitive amounts'}
+              title={hideAmounts ? 'Show sensitive amounts (Alt+H)' : 'Hide sensitive amounts (Alt+H)'}
+              className={cn(
+                'md:hidden p-2 rounded-xl border transition-all focus:outline-none focus:ring-2 focus:ring-primary-500/40 cursor-pointer',
+                hideAmounts
+                  ? 'bg-primary-500/15 border-primary-500/35 text-primary-400'
+                  : 'text-text-muted hover:text-text-primary hover:bg-surface-lighter border-border/50'
+              )}
+            >
+              {hideAmounts ? (
+                <EyeOff size={16} className="text-primary-400" />
+              ) : (
+                <Eye size={16} />
+              )}
+            </button>
             <button
               type="button"
               onClick={toggleTheme}

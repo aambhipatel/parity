@@ -3,7 +3,7 @@ import { Card, CardTitle } from '../components/Card';
 import { LoadingSpinner, ErrorMessage } from '../components/StatusIndicators';
 import { useAsync } from '../hooks/useAsync';
 import { getOptionsPortfolio, getAccounts, dismissUnmatchedOption } from '../services/api';
-import { formatCurrency, formatDate } from '../utils/helpers';
+import { formatCurrency, formatDate, getGlobalHideAmounts } from '../utils/helpers';
 import { Tooltip } from '../components/Tooltip';
 import { CompanyTooltip } from '../components/CompanyTooltip';
 import {
@@ -1418,7 +1418,7 @@ export function OptionsPage() {
                     width={85}
                     domain={[yDomain.minLineVal, yDomain.maxLineVal]}
                     tickCount={7}
-                    tickFormatter={(v) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(v)}
+                    tickFormatter={(v) => getGlobalHideAmounts() ? '••••' : new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(v)}
                   />
                   <RechartsTooltip
                     contentStyle={{ backgroundColor: '#13171f', border: '1px solid #232b38', borderRadius: '8px', color: '#f8fafc' }}
@@ -1513,7 +1513,7 @@ export function OptionsPage() {
                     width={85}
                     domain={[yDomain.minBarVal, yDomain.maxBarVal]}
                     tickCount={7}
-                    tickFormatter={(v) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(v)}
+                    tickFormatter={(v) => getGlobalHideAmounts() ? '••••' : new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(v)}
                   />
                   <RechartsTooltip
                     contentStyle={{ backgroundColor: '#13171f', border: '1px solid #232b38', borderRadius: '8px', color: '#f8fafc' }}

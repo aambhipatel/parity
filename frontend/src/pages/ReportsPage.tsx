@@ -4,7 +4,7 @@ import { Select } from '../components/FormControls';
 import { LoadingSpinner, ErrorMessage } from '../components/StatusIndicators';
 import { useAsync } from '../hooks/useAsync';
 import { getIncomeStatement, getBalanceSheet, getCashFlow, getAccounts } from '../services/api';
-import { formatCurrency, getMonthOptions, cn } from '../utils/helpers';
+import { formatCurrency, getMonthOptions, cn, getGlobalHideAmounts } from '../utils/helpers';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell,
 } from 'recharts';
@@ -181,7 +181,7 @@ function IncomeStatementView({ month, accountId }: { month: string; accountId: s
         <ResponsiveContainer width="100%" height={chartHeight}>
           <BarChart data={chartData} layout="vertical" margin={{ left: 110, right: 20, top: 10, bottom: 10 }} barCategoryGap="40%">
             <CartesianGrid strokeDasharray="3 3" stroke="#232b38" />
-            <XAxis type="number" tick={{ fill: '#94a3b8', fontSize: 12 }} tickFormatter={(v) => `$${v.toLocaleString()}`} axisLine={false} tickLine={false} />
+            <XAxis type="number" tick={{ fill: '#94a3b8', fontSize: 12 }} tickFormatter={(v) => getGlobalHideAmounts() ? '••••' : `$${v.toLocaleString()}`} axisLine={false} tickLine={false} />
             <YAxis
               type="category"
               dataKey="name"
@@ -404,7 +404,7 @@ function CashFlowView({ month, accountId }: { month: string; accountId: string }
           <BarChart data={chartData}>
             <CartesianGrid strokeDasharray="3 3" stroke="#232b38" />
             <XAxis dataKey="name" tick={{ fill: '#94a3b8', fontSize: 12 }} axisLine={false} tickLine={false} />
-            <YAxis tick={{ fill: '#94a3b8', fontSize: 12 }} axisLine={false} tickLine={false} tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`} />
+            <YAxis tick={{ fill: '#94a3b8', fontSize: 12 }} axisLine={false} tickLine={false} tickFormatter={(v) => getGlobalHideAmounts() ? '••••' : `$${(v / 1000).toFixed(0)}k`} />
             <Tooltip
               contentStyle={{ backgroundColor: '#13171f', border: '1px solid #232b38', borderRadius: 8, color: '#f8fafc' }}
               formatter={(value: any) => formatCurrency(Number(value))}

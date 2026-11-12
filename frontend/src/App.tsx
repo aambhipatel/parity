@@ -4,6 +4,7 @@ import { Layout } from './components/Layout';
 import { LoadingSpinner } from './components/StatusIndicators';
 import { resetToDefaultDatabase } from './services/api';
 import { ThemeProvider } from './context/ThemeContext';
+import { PrivacyProvider } from './context/PrivacyContext';
 
 const DashboardPage = lazy(() => import('./pages/DashboardPage').then(m => ({ default: m.DashboardPage })));
 const AccountsPage = lazy(() => import('./pages/AccountsPage').then(m => ({ default: m.AccountsPage })));
@@ -30,30 +31,34 @@ export default function App() {
   if (!initialized) {
     return (
       <ThemeProvider>
-        <div className="h-screen w-screen flex items-center justify-center bg-surface">
-          <LoadingSpinner message="Initializing workspace..." />
-        </div>
+        <PrivacyProvider>
+          <div className="h-screen w-screen flex items-center justify-center bg-surface">
+            <LoadingSpinner message="Initializing workspace..." />
+          </div>
+        </PrivacyProvider>
       </ThemeProvider>
     );
   }
 
   return (
     <ThemeProvider>
-      <BrowserRouter>
-        <Suspense fallback={<div className="h-screen w-screen flex items-center justify-center bg-surface"><LoadingSpinner message="Loading workspace..." /></div>}>
-        <Routes>
-          <Route element={<Layout />}>
-            <Route path="/" element={<DashboardPage />} />
-            <Route path="/accounts" element={<AccountsPage />} />
-            <Route path="/transactions" element={<TransactionsPage />} />
-            <Route path="/reports" element={<ReportsPage />} />
-            <Route path="/investments" element={<InvestmentsPage />} />
-            <Route path="/options" element={<OptionsPage />} />
-            <Route path="/admin" element={<AdminPage />} />
-          </Route>
-        </Routes>
-      </Suspense>
-    </BrowserRouter>
+      <PrivacyProvider>
+        <BrowserRouter>
+          <Suspense fallback={<div className="h-screen w-screen flex items-center justify-center bg-surface"><LoadingSpinner message="Loading workspace..." /></div>}>
+          <Routes>
+            <Route element={<Layout />}>
+              <Route path="/" element={<DashboardPage />} />
+              <Route path="/accounts" element={<AccountsPage />} />
+              <Route path="/transactions" element={<TransactionsPage />} />
+              <Route path="/reports" element={<ReportsPage />} />
+              <Route path="/investments" element={<InvestmentsPage />} />
+              <Route path="/options" element={<OptionsPage />} />
+              <Route path="/admin" element={<AdminPage />} />
+            </Route>
+          </Routes>
+        </Suspense>
+      </BrowserRouter>
+      </PrivacyProvider>
     </ThemeProvider>
   );
 }

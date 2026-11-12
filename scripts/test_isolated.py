@@ -29,7 +29,7 @@ def main():
     scratch.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(dir=scratch) as directory:
         work = Path(directory).resolve()
-        for name in ('models', 'services', 'utils', 'controllers', 'tests'):
+        for name in ('models', 'services', 'utils', 'controllers', 'scripts', 'tests'):
             shutil.copytree(root/name, work/name, ignore=shutil.ignore_patterns('__pycache__'))
         shutil.copy2(root/'server.py', work/'server.py')
         env = dict(os.environ, APP_SYNTHETIC_TEST_ROOT=str(work), PYTHONDONTWRITEBYTECODE='1')

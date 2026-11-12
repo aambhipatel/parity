@@ -1,4 +1,22 @@
-export function formatCurrency(value: number): string {
+let _hideAmounts = typeof window !== 'undefined' && localStorage.getItem('parity-hide-amounts') === 'true';
+
+export function setGlobalHideAmounts(hide: boolean) {
+  _hideAmounts = hide;
+}
+
+export function getGlobalHideAmounts(): boolean {
+  return _hideAmounts;
+}
+
+export const PRIVACY_MASK = '$••••••';
+
+export function formatCurrency(value: number, forceShow = false): string {
+  if (_hideAmounts && !forceShow) {
+    return PRIVACY_MASK;
+  }
+  if (value == null || isNaN(value)) {
+    return '$0.00';
+  }
   const abs = Math.abs(value);
   const formatted = abs.toLocaleString('en-US', {
     style: 'currency',
@@ -74,11 +92,11 @@ export function parseDescription(raw: string): ParsedDescription {
     } else if (part.startsWith('Qty:')) {
       result.qty = part.replace('Qty:', '').trim();
     } else if (part.startsWith('Price:')) {
-      result.price = part.replace('Price:', '').trim();
+      result.price = _hideAmounts ? '$••••••' : part.replace('Price:', '').trim();
     } else if (part.startsWith('Fees:')) {
       const feeVal = parseFloat(part.replace('Fees:', '').replace('$', '').trim()) || 0;
       accumulatedFees += feeVal;
-      result.fees = `$${accumulatedFees.toFixed(2)}`;
+      result.fees = _hideAmounts ? '$••••••' : `$${accumulatedFees.toFixed(2)}`;
     } else if (!result.title) {
       result.title = part;
     }
